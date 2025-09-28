@@ -1,17 +1,14 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { GeistSans } from "geist/font/sans"
-import { GeistMono } from "geist/font/mono"
-import { Analytics } from "@vercel/analytics/next"
+import { Inter } from "next/font/google"
 import "./globals.css"
 import { AuthProvider } from "@/lib/auth"
-import { AppLayout } from "@/components/layout/app-layout"
-import { AuthGuard } from "@/components/auth/auth-guard"
-import { Suspense } from "react"
+
+const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "v0 App",
-  description: "Created with v0",
+  title: "HealSerp - Healthcare Management System",
+  description: "Comprehensive healthcare management platform",
   generator: "v0.app",
 }
 
@@ -21,16 +18,9 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} antialiased`}>
+    <html lang="en" className={inter.className}>
       <body>
-        <AuthProvider>
-          <AuthGuard>
-            <Suspense fallback={<div>Loading...</div>}>
-              <AppLayout>{children}</AppLayout>
-            </Suspense>
-          </AuthGuard>
-        </AuthProvider>
-        <Analytics />
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   )

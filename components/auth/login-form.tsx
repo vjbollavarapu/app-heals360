@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { AuthService } from "@/lib/auth"
-import Image from "next/image"
+import { useAuth } from "@/lib/auth"
+import { Heart } from "lucide-react"
 
 export function LoginForm() {
   const [email, setEmail] = useState("")
@@ -17,14 +17,14 @@ export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const router = useRouter()
+  const { login } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError("")
 
-    const authService = AuthService.getInstance()
-    const result = await authService.login(email, password)
+    const result = await login(email, password)
 
     if (result.success && result.user) {
       // Redirect based on role
@@ -68,7 +68,9 @@ export function LoginForm() {
         {/* Logo and Branding */}
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center space-x-3">
-            <Image src="/images/healserp-logo.png" alt="HEALS Logo" width={48} height={48} className="rounded-lg" />
+            <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+              <Heart className="w-6 h-6 text-primary-foreground" />
+            </div>
             <h1 className="text-3xl font-bold text-primary">HEALS</h1>
           </div>
           <p className="text-muted-foreground">Healthcare Enterprise Administration System</p>

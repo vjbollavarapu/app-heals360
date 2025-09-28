@@ -1,3 +1,7 @@
+"use client"
+
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
+
 export interface User {
   id: string
   email: string
@@ -137,14 +141,18 @@ export class AuthService {
 
     // For demo purposes, any password works
     this.currentUser = user
-    localStorage.setItem("heals_user", JSON.stringify(user))
+    if (typeof window !== "undefined") {
+      localStorage.setItem("heals_user", JSON.stringify(user))
+    }
 
     return { success: true, user }
   }
 
   logout(): void {
     this.currentUser = null
-    localStorage.removeItem("heals_user")
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("heals_user")
+    }
   }
 
   getCurrentUser(): User | null {
@@ -152,10 +160,12 @@ export class AuthService {
       return this.currentUser
     }
 
-    const stored = localStorage.getItem("heals_user")
-    if (stored) {
-      this.currentUser = JSON.parse(stored)
-      return this.currentUser
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("heals_user")
+      if (stored) {
+        this.currentUser = JSON.parse(stored)
+        return this.currentUser
+      }
     }
 
     return null
@@ -175,9 +185,6 @@ export class AuthService {
     return user ? roles.includes(user.role) : false
   }
 }
-;("use client")
-
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 
 interface AuthContextType {
   user: User | null
@@ -186,6 +193,7 @@ interface AuthContextType {
   isAuthenticated: boolean
   hasRole: (role: UserRole) => boolean
   hasAnyRole: (roles: UserRole[]) => boolean
+  isLoading: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -222,10 +230,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return user ? roles.includes(user.role) : false
   }
 
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
-
   return (
     <AuthContext.Provider
       value={{
@@ -235,6 +239,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!user,
         hasRole,
         hasAnyRole,
+        isLoading,
       }}
     >
       {children}
